@@ -1,17 +1,19 @@
+#include <boost/array.hpp>
+#include <boost/asio.hpp>
+#include <chrono>
 #include <cmath>
 #include <cstddef>
 #include <deque>
+#include <iostream>
 #include <list>
 #include <vector>
 
+#include "dctl_generated.h"
+#include "game.h"
 #include "raylib.h"
 #include "raymath.h"
 
-#include "game.h"
-#include <chrono>
-#include "dctl_generated.h"
-#include <boost/array.hpp>
-#include <boost/asio.hpp>
+using boost::asio::ip::udp;
 
 const size_t MAPWIDTH = 107;
 const size_t MAPHEIGHT = 54;
@@ -21,7 +23,8 @@ const float SPEED = (float)58 / 6;
 
 // class Snake {
 // public:
-//   Snake(Vector2 pos, Dir dir, Color color, size_t maxLength) : dir_(dir), color_(color), maxLength_(maxLength) {
+//   Snake(Vector2 pos, Dir dir, Color color, size_t maxLength) : dir_(dir),
+//   color_(color), maxLength_(maxLength) {
 //     tail_.emplace_back(pos);
 //     tail_.emplace_back(pos);
 //   }
@@ -46,8 +49,10 @@ const float SPEED = (float)58 / 6;
 //   Color get_color() const { return color_; }
 
 //   void set_dir(Dir dir) {
-//     if (((dir_ == up) || (dir_ == down)) && ((dir == left) || (dir == right)) ||
-//         ((dir_ == left) || (dir_ == right)) && ((dir == up) || (dir == down))) {
+//     if (((dir_ == up) || (dir_ == down)) && ((dir == left) || (dir == right))
+//     ||
+//         ((dir_ == left) || (dir_ == right)) && ((dir == up) || (dir ==
+//         down))) {
 //       dir_ = dir;
 //       tail_.emplace_back(tail_.back());
 //     }
@@ -75,9 +80,7 @@ const float SPEED = (float)58 / 6;
 //   size_t maxLength_;
 // };
 
-int main()
-{
-
+int main() {
   bool allowMove = false;
 
   SetConfigFlags(FLAG_MSAA_4X_HINT);
@@ -92,46 +95,31 @@ int main()
 
   auto tp{std::chrono::_V2::system_clock::now()};
   Vector2 s1{3, (float)MAPHEIGHT / 2};
-  game.SetSnake(0, {0, tp, {s1, s1}, Dir::right, (Color){0, 255, 255, 255}}); // CYAN
+  game.SetSnake({0, tp, {s1, s1}, Dir::right, (Color){0, 255, 255, 255}});  // CYAN
   Vector2 s2{MAPWIDTH - 3, (float)MAPHEIGHT / 2};
-  game.SetSnake(1, {1, tp, {s2, s2}, Dir::left, (Color){255, 0, 255, 255}}); // MAGENTA
+  game.SetSnake({1, tp, {s2, s2}, Dir::left, (Color){255, 0, 255, 255}});  // MAGENTA
   Vector2 s3{(float)MAPWIDTH / 2, 3};
-  game.SetSnake(2, {2, tp, {s3, s3}, Dir::down, (Color){0, 255, 0, 255}}); // GREEN
+  game.SetSnake({2, tp, {s3, s3}, Dir::down, (Color){0, 255, 0, 255}});  // GREEN
   Vector2 s4{(float)MAPWIDTH / 2, MAPHEIGHT - 3};
-  game.SetSnake(3, {3, tp, {s4, s4}, Dir::up, (Color){255, 255, 0, 255}}); // YELLOW
+  game.SetSnake({3, tp, {s4, s4}, Dir::up, (Color){255, 255, 0, 255}});  // YELLOW
 
-  // std::list<Snake> snakes;
-
-  // snakes.emplace_back((Vector2){3, (float)MAPHEIGHT / 2}, right,
-  //                     (Color){0, 255, 255, 255}); // CYAN
-  // snakes.emplace_back((Vector2){MAPWIDTH - 3, (float)MAPHEIGHT / 2}, left,
-  //                     (Color){255, 0, 255, 255}); // MAGENTA
-  // snakes.emplace_back((Vector2){(float)MAPWIDTH / 2, 3}, down,
-  //                     (Color){0, 255, 0, 255}); // GREEN
-  // snakes.emplace_back((Vector2){(float)MAPWIDTH / 2, MAPHEIGHT - 3}, up,
-  //                     (Color){255, 255, 0, 255},60); // YELLOW
-
-  while (!WindowShouldClose()) // Detect window close button or ESC key
+  while (!WindowShouldClose())  // Detect window close button or ESC key
   {
     Dir dir{none};
 
-    if (IsKeyPressed(KEY_RIGHT) && allowMove)
-    {
+    if (IsKeyPressed(KEY_RIGHT) && allowMove) {
       dir = right;
       allowMove = false;
     }
-    if (IsKeyPressed(KEY_LEFT) && allowMove)
-    {
+    if (IsKeyPressed(KEY_LEFT) && allowMove) {
       dir = left;
       allowMove = false;
     }
-    if (IsKeyPressed(KEY_UP) && allowMove)
-    {
+    if (IsKeyPressed(KEY_UP) && allowMove) {
       dir = up;
       allowMove = false;
     }
-    if (IsKeyPressed(KEY_DOWN) && allowMove)
-    {
+    if (IsKeyPressed(KEY_DOWN) && allowMove) {
       dir = down;
       allowMove = false;
     }
@@ -139,9 +127,27 @@ int main()
     game.SetDir(dir);
 
     auto mySnake = game.Update(std::chrono::_V2::system_clock::now());
-    
-    auto res = PackGameState({mySnake,mySnake,mySnake});
-    auto unpacked = UnpackGameState(res);
+
+    auto res = PackGameState({mySnake, mySnake, mySnake});
+    // auto unpacked = UnpackGameState(res);
+
+    // boost::asio::io_service io_service;
+    // udp::resolver resolver(io_service);
+    // udp::resolver::query query(udp::v4(), "localhost", "daytime");
+    // udp::endpoint receiver_endpoint = *resolver.resolve(query);
+
+    // udp::socket socket(io_service);
+    // socket.open(udp::v4());
+
+    // boost::array<char, 1> send_buf = {0};
+    // socket.send_to(boost::asio::buffer(send_buf), receiver_endpoint);
+
+    // boost::array<char, 128> recv_buf;
+    // udp::endpoint sender_endpoint;
+    // size_t len =
+    //     socket.receive_from(boost::asio::buffer(recv_buf), sender_endpoint);
+
+    // std::cout.write(recv_buf.data(), len);
 
     BeginDrawing();
 
@@ -156,21 +162,20 @@ int main()
   return 0;
 }
 
+// auto dist = GetFrameTime() * SPEED;
+// auto it = snakes.begin();
 
-    // auto dist = GetFrameTime() * SPEED;
-    // auto it = snakes.begin();
-
-    // while (it != snakes.end()) {
-    //   it->set_dir(dir);
-    //   auto pos = it->move(dist);
-    //   if (it->SelfIntersect()) {
-    //     it = snakes.erase(it);
-    //     break;
-    //   }
-    //   auto tail = it->get_tail();
-    //   if (pos.x < 0 || pos.y < 0 || pos.x > MAPWIDTH || pos.y > MAPHEIGHT) {
-    //     it = snakes.erase(it);
-    //   } else {
-    //     ++it;
-    //   }
-    // }
+// while (it != snakes.end()) {
+//   it->set_dir(dir);
+//   auto pos = it->move(dist);
+//   if (it->SelfIntersect()) {
+//     it = snakes.erase(it);
+//     break;
+//   }
+//   auto tail = it->get_tail();
+//   if (pos.x < 0 || pos.y < 0 || pos.x > MAPWIDTH || pos.y > MAPHEIGHT) {
+//     it = snakes.erase(it);
+//   } else {
+//     ++it;
+//   }
+// }
