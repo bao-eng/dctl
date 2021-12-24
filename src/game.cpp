@@ -38,7 +38,15 @@ void Game::Draw(std::chrono::_V2::system_clock::time_point tp) {
   }
 }
 
-void Game::SetSnake(Snake snake) { snakes_[snake.playerId] = snake; }
+void Game::SetSnake(Snake snake) {
+  if (snakes_.find(snake.playerId) != snakes_.end()) {
+    if (snake.timeStamp > snakes_.at(snake.playerId).timeStamp) {
+      snakes_[snake.playerId] = snake;
+    }
+  }else{
+    snakes_[snake.playerId] = snake;
+  }
+}
 
 void Game::SetDir(Dir dir) {
   auto myDir = snakes_.at(mySnake_).dir;
