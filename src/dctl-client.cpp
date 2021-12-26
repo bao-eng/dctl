@@ -95,6 +95,8 @@ int main() {
   uint32_t sequence{0};
   double t = 0.0;
   double dt = 0.01;
+  auto currentTime = std::chrono::_V2::system_clock::now();
+  double accumulator = 0.0;
 
   Game game(MAPWIDTH, MAPHEIGHT, SCALE, SPEED, dt, 60);
 
@@ -116,18 +118,11 @@ int main() {
   st.snakes.push_back(s4);
 
   game.SetState(st);
-
-  auto currentTime = std::chrono::_V2::system_clock::now();
-  double accumulator = 0.0;
-
-  // State previous;
-  // State current;
+  t += dt;
+  sequence++;
 
   while (!WindowShouldClose())  // Detect window close button or ESC key
   {
-    Input inp{IsKeyPressed(KEY_LEFT), IsKeyPressed(KEY_RIGHT),
-              IsKeyPressed(KEY_UP), IsKeyPressed(KEY_DOWN)};
-
     auto newTime = std::chrono::_V2::system_clock::now();
     auto frameTime =
         std::chrono::duration<double>(newTime - currentTime).count();
@@ -138,24 +133,14 @@ int main() {
     accumulator += frameTime;
 
     while (accumulator >= dt) {
-      // std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      // previousState = currentState;
-      // integrate(currentState, t, dt);
+      Input inp{sequence, IsKeyPressed(KEY_LEFT), IsKeyPressed(KEY_RIGHT),
+                IsKeyPressed(KEY_UP), IsKeyPressed(KEY_DOWN)};
+      
+      game.Process(inp);
       t += dt;
       sequence++;
       accumulator -= dt;
-      game.FeedInput(inp, sequence);
-      std::cout << "t=" << t << " accumulator=" << accumulator
-                << " sequence=" << sequence << std::endl;
     }
-
-    // const double alpha = accumulator / dt;
-
-    // State state = currentState * alpha + previousState * (1.0 - alpha);
-
-    // render(state);
-
-
     // auto mySnake = game.Update(std::chrono::_V2::system_clock::now());
 
     // auto res = PackGameState({mySnake, mySnake, mySnake});

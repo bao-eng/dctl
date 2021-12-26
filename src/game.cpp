@@ -1,5 +1,7 @@
 #include "game.h"
 
+#include <iostream>
+
 // std::vector<char> PackInput(const Input &i) {
 //   flatbuffers::FlatBufferBuilder builder;
 //   auto input = DCTL::CreateInput(builder, i.sequence, i.player_id, i.left,
@@ -42,8 +44,8 @@ void Game::Draw() {
   }
 }
 
-void Game::FeedInput(const Input &i, const uint32_t &seq) {
-  clientBuffer_.push_back({i, NextState(clientBuffer_.back().state, i)});
+void Game::Process(const Input &inp) {
+  clientBuffer_.push_back({inp, NextState(clientBuffer_.back().state, inp)});
 }
 
 State Game::NextState(const State &st, const Input &inp) {
@@ -63,18 +65,18 @@ State Game::NextState(const State &st, const Input &inp) {
     }
     ns.snakes.push_back(tmp);
   }
-  ns.sequence = st.sequence + 1;
+  ns.sequence = inp.sequence;  // st.sequence + 1;
   return ns;
 }
 
-void Game::SetState(const State &s) {
+void Game::SetState(const State &st) {
   if (!clientBuffer_.empty()) {
-    while (clientBuffer_.front().state.sequence < s.sequence) {
+    while (clientBuffer_.front().state.sequence < st.sequence) {
       clientBuffer_.pop_front();
     }
-    clientBuffer_.front().state = s;
+    clientBuffer_.front().state = st;
   } else {
-    clientBuffer_.push_back({{false, false, false, false}, s});
+    clientBuffer_.push_back({{false, false, false, false}, st});
   }
 
   if (clientBuffer_.size() > 1) {
@@ -84,14 +86,14 @@ void Game::SetState(const State &s) {
   }
 }
 
-Dir Game::NewDir(const Dir &curDir, Input i) {
-  if (((curDir == up) || (curDir == down)) && (i.left != i.right)) {
-    if (i.left) return left;
-    if (i.right) return right;
+Dir Game::NewDir(const Dir &curDir, const Input &inp) {
+  if (((curDir == up) || (curDir == down)) && (inp.left != inp.right)) {
+    if (inp.left) return left;
+    if (inp.right) return right;
   }
-  if (((curDir == left) || (curDir == right)) && (i.up != i.down)) {
-    if (i.up) return up;
-    if (i.down) return down;
+  if (((curDir == left) || (curDir == right)) && (inp.up != inp.down)) {
+    if (inp.up) return up;
+    if (inp.down) return down;
   }
   return curDir;
 }
