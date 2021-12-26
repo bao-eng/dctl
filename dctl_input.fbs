@@ -1,0 +1,12 @@
+namespace DCTL;
+
+table Input {
+  sequence:uint32;
+  player_id:uint32;
+  left:bool;
+  right:bool;
+  up:bool;
+  down:bool;
+}
+
+root_type Input;

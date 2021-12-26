@@ -8,7 +8,8 @@
 #include <list>
 #include <vector>
 
-#include "dctl_generated.h"
+#include "dctl_input_generated.h"
+#include "dctl_state_generated.h"
 #include "game.h"
 #include "raylib.h"
 #include "raymath.h"
@@ -81,7 +82,7 @@ const float SPEED = (float)58 / 6;
 // };
 
 int main() {
-  bool allowMove = false;
+  bool allowMove = true;
 
   SetConfigFlags(FLAG_MSAA_4X_HINT);
 
@@ -89,46 +90,75 @@ int main() {
   // InitWindow(1920, 1080, "snake");
   // ToggleFullscreen();
 
-  SetTargetFPS(100);
+  SetTargetFPS(60);
 
-  Game game(MAPWIDTH, MAPHEIGHT, SCALE, SPEED, 60);
+  uint32_t sequence{0};
+  double t = 0.0;
+  double dt = 0.01;
 
-  auto tp{std::chrono::_V2::system_clock::now()};
-  Vector2 s1{3, (float)MAPHEIGHT / 2};
-  game.SetSnake({0, tp, {s1, s1}, Dir::right, (Color){0, 255, 255, 255}});  // CYAN
-  Vector2 s2{MAPWIDTH - 3, (float)MAPHEIGHT / 2};
-  game.SetSnake({1, tp, {s2, s2}, Dir::left, (Color){255, 0, 255, 255}});  // MAGENTA
-  Vector2 s3{(float)MAPWIDTH / 2, 3};
-  game.SetSnake({2, tp, {s3, s3}, Dir::down, (Color){0, 255, 0, 255}});  // GREEN
-  Vector2 s4{(float)MAPWIDTH / 2, MAPHEIGHT - 3};
-  game.SetSnake({3, tp, {s4, s4}, Dir::up, (Color){255, 255, 0, 255}});  // YELLOW
+  Game game(MAPWIDTH, MAPHEIGHT, SCALE, SPEED, dt, 60);
+
+  State st;
+  st.sequence = sequence;
+
+  Vector2 p1{3, (float)MAPHEIGHT / 2};
+  Snake s1{0, {p1, p1}, Dir::right, (Color){0, 255, 255, 255}};  // CYAN
+  Vector2 p2{MAPWIDTH - 3, (float)MAPHEIGHT / 2};
+  Snake s2{1, {p2, p2}, Dir::left, (Color){255, 0, 255, 255}};  // MAGENTA
+  Vector2 p3{(float)MAPWIDTH / 2, 3};
+  Snake s3{2, {p3, p3}, Dir::down, (Color){0, 255, 0, 255}};  // GREEN
+  Vector2 p4{(float)MAPWIDTH / 2, MAPHEIGHT - 3};
+  Snake s4{3, {p4, p4}, Dir::up, (Color){255, 255, 0, 255}};  // YELLOW
+
+  st.snakes.push_back(s1);
+  st.snakes.push_back(s2);
+  st.snakes.push_back(s3);
+  st.snakes.push_back(s4);
+
+  game.SetState(st);
+
+  auto currentTime = std::chrono::_V2::system_clock::now();
+  double accumulator = 0.0;
+
+  // State previous;
+  // State current;
 
   while (!WindowShouldClose())  // Detect window close button or ESC key
   {
-    Dir dir{none};
+    Input inp{IsKeyPressed(KEY_LEFT), IsKeyPressed(KEY_RIGHT),
+              IsKeyPressed(KEY_UP), IsKeyPressed(KEY_DOWN)};
 
-    if (IsKeyPressed(KEY_RIGHT) && allowMove) {
-      dir = right;
-      allowMove = false;
-    }
-    if (IsKeyPressed(KEY_LEFT) && allowMove) {
-      dir = left;
-      allowMove = false;
-    }
-    if (IsKeyPressed(KEY_UP) && allowMove) {
-      dir = up;
-      allowMove = false;
-    }
-    if (IsKeyPressed(KEY_DOWN) && allowMove) {
-      dir = down;
-      allowMove = false;
-    }
-    allowMove = true;
-    game.SetDir(dir);
+    auto newTime = std::chrono::_V2::system_clock::now();
+    auto frameTime =
+        std::chrono::duration<double>(newTime - currentTime).count();
+    std::cout << frameTime << std::endl;
+    if (frameTime > 0.25) frameTime = 0.25;
+    currentTime = newTime;
 
-    auto mySnake = game.Update(std::chrono::_V2::system_clock::now());
+    accumulator += frameTime;
 
-    auto res = PackGameState({mySnake, mySnake, mySnake});
+    while (accumulator >= dt) {
+      // std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      // previousState = currentState;
+      // integrate(currentState, t, dt);
+      t += dt;
+      sequence++;
+      accumulator -= dt;
+      game.FeedInput(inp, sequence);
+      std::cout << "t=" << t << " accumulator=" << accumulator
+                << " sequence=" << sequence << std::endl;
+    }
+
+    // const double alpha = accumulator / dt;
+
+    // State state = currentState * alpha + previousState * (1.0 - alpha);
+
+    // render(state);
+
+
+    // auto mySnake = game.Update(std::chrono::_V2::system_clock::now());
+
+    // auto res = PackGameState({mySnake, mySnake, mySnake});
     // auto unpacked = UnpackGameState(res);
 
     // boost::asio::io_service io_service;
@@ -146,12 +176,13 @@ int main() {
     // udp::endpoint sender_endpoint;
     // size_t len =
     //     socket.receive_from(boost::asio::buffer(recv_buf), sender_endpoint);
+    // async_receive_from (1 of 2 overloads)
 
     // std::cout.write(recv_buf.data(), len);
 
     BeginDrawing();
 
-    game.Draw(std::chrono::_V2::system_clock::now());
+    game.Draw();
 
     DrawFPS(10, 10);
     EndDrawing();

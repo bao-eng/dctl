@@ -4,16 +4,20 @@
 #include <deque>
 
 #include "dctl_common.h"
-#include "dctl_generated.h"
+#include "dctl_state_generated.h"
 #include "raylib.h"
 
 struct Snake {
   int playerId;
-  std::chrono::_V2::system_clock::time_point timeStamp;
   std::deque<Vector2> tail;
   Dir dir;
   Color color;
 };
 
-std::vector<char> PackGameState(const std::vector<Snake>& snakes);
-std::vector<Snake> UnpackGameState(const std::vector<char>& snakes);
+struct State{
+  uint32_t sequence;
+  std::vector<Snake> snakes;
+};
+
+std::vector<char> PackGameState(uint32_t sequence, const std::vector<Snake>& snakes);
+State UnpackGameState(const std::vector<char>& buf);

@@ -15,13 +15,13 @@ struct Color {
 
 table Snake {
   player_id:int32;
-  time_stamp:int64;
   tail:[Vec2];
   dir:Dir;
   color:Color;
 }
 
 table GameState {
+  sequence:uint32;
   snakes:[Snake];
 }
 
