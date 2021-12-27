@@ -1,3 +1,3 @@
 #pragma once
 
-enum Dir { none, up, down, left, right };
+enum Dir { kNone, kUp, kDown, kLeft, kRight };

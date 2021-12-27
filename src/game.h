@@ -26,27 +26,26 @@ Input UnpackInput(const std::vector<char> &flat);
 
 class Game {
  public:
-  Game(float mapWidth, float mapHeight, float scale, float speed, double dt,
-       size_t maxLength);
+  Game(float map_width, float map_height, float scale, float speed, double dt,
+       size_t max_length);
   void Draw();
   void Process(const Input &inp);
   void SetState(const State &st);
 
  private:
-  void DrawLineExRoundEnd(Vector2 startPos, Vector2 endPos, float thick,
+  void DrawLineExRoundEnd(Vector2 start_pos, Vector2 end_pos, float thick,
                           Color color);
   bool isIntersecting(Vector2 &p1, Vector2 &p2, Vector2 &q1, Vector2 &q2);
   State NextState(const State &st, const Input &inp);
-  Vector2 newPos(Dir dir, float dist, Vector2 curPos);
-  Dir NewDir(const Dir &curDir, const Input &inp);
-  float mapWidth_;
-  float mapHeight_;
+  Vector2 newPos(Dir dir, float dist, Vector2 cur_pos);
+  Dir NewDir(const Dir &cur_dir, const Input &inp);
+  float map_width_;
+  float map_height_;
   float scale_;
   float speed_;
   double dt_;
-  size_t maxLength_;
-  size_t maxLength;
-  int mySnake_{0};
+  size_t max_length_;
+  int my_snake_{0};
   std::unordered_map<int, Snake> snakes_;
-  boost::circular_buffer<ClientState> clientBuffer_{500};
+  boost::circular_buffer<ClientState> client_buffer_{500};
 };

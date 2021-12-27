@@ -16,11 +16,10 @@
 
 using boost::asio::ip::udp;
 
-const size_t MAPWIDTH = 107;
-const size_t MAPHEIGHT = 54;
-const size_t SCALE = 15;
-const size_t SNAKES = 10;
-const float SPEED = (float)58 / 6;
+const size_t kMapWidth = 107;
+const size_t kMapHeight = 54;
+const size_t kScale = 15;
+const float kSpeed = (float)58 / 6;
 
 // class Snake {
 // public:
@@ -82,11 +81,9 @@ const float SPEED = (float)58 / 6;
 // };
 
 int main() {
-  bool allowMove = true;
-
   SetConfigFlags(FLAG_MSAA_4X_HINT);
 
-  InitWindow((MAPWIDTH + 1) * SCALE, (MAPHEIGHT + 1) * SCALE, "snake");
+  InitWindow((kMapWidth + 1) * kScale, (kMapHeight + 1) * kScale, "snake");
   // InitWindow(1920, 1080, "snake");
   // ToggleFullscreen();
 
@@ -95,22 +92,22 @@ int main() {
   uint32_t sequence{0};
   double t = 0.0;
   double dt = 0.01;
-  auto currentTime = std::chrono::_V2::system_clock::now();
+  auto current_time = std::chrono::_V2::system_clock::now();
   double accumulator = 0.0;
 
-  Game game(MAPWIDTH, MAPHEIGHT, SCALE, SPEED, dt, 60);
+  Game game(kMapWidth, kMapHeight, kScale, kSpeed, dt, 60);
 
   State st;
   st.sequence = sequence;
 
-  Vector2 p1{3, (float)MAPHEIGHT / 2};
-  Snake s1{0, {p1, p1}, Dir::right, (Color){0, 255, 255, 255}};  // CYAN
-  Vector2 p2{MAPWIDTH - 3, (float)MAPHEIGHT / 2};
-  Snake s2{1, {p2, p2}, Dir::left, (Color){255, 0, 255, 255}};  // MAGENTA
-  Vector2 p3{(float)MAPWIDTH / 2, 3};
-  Snake s3{2, {p3, p3}, Dir::down, (Color){0, 255, 0, 255}};  // GREEN
-  Vector2 p4{(float)MAPWIDTH / 2, MAPHEIGHT - 3};
-  Snake s4{3, {p4, p4}, Dir::up, (Color){255, 255, 0, 255}};  // YELLOW
+  Vector2 p1{3, (float)kMapHeight / 2};
+  Snake s1{0, {p1, p1}, Dir::kRight, (Color){0, 255, 255, 255}};  // CYAN
+  Vector2 p2{kMapWidth - 3, (float)kMapHeight / 2};
+  Snake s2{1, {p2, p2}, Dir::kLeft, (Color){255, 0, 255, 255}};  // MAGENTA
+  Vector2 p3{(float)kMapWidth / 2, 3};
+  Snake s3{2, {p3, p3}, Dir::kDown, (Color){0, 255, 0, 255}};  // GREEN
+  Vector2 p4{(float)kMapWidth / 2, kMapHeight - 3};
+  Snake s4{3, {p4, p4}, Dir::kUp, (Color){255, 255, 0, 255}};  // YELLOW
 
   st.snakes.push_back(s1);
   st.snakes.push_back(s2);
@@ -123,14 +120,14 @@ int main() {
 
   while (!WindowShouldClose())  // Detect window close button or ESC key
   {
-    auto newTime = std::chrono::_V2::system_clock::now();
-    auto frameTime =
-        std::chrono::duration<double>(newTime - currentTime).count();
-    std::cout << frameTime << std::endl;
-    if (frameTime > 0.25) frameTime = 0.25;
-    currentTime = newTime;
+    auto new_time = std::chrono::_V2::system_clock::now();
+    auto frame_time =
+        std::chrono::duration<double>(new_time - current_time).count();
+    std::cout << frame_time << std::endl;
+    if (frame_time > 0.25) frame_time = 0.25;
+    current_time = new_time;
 
-    accumulator += frameTime;
+    accumulator += frame_time;
 
     while (accumulator >= dt) {
       Input inp{sequence, IsKeyPressed(KEY_LEFT), IsKeyPressed(KEY_RIGHT),

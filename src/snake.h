@@ -8,7 +8,7 @@
 #include "raylib.h"
 
 struct Snake {
-  int playerId;
+  int player_id;
   std::deque<Vector2> tail;
   Dir dir;
   Color color;

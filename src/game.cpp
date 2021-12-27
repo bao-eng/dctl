@@ -2,10 +2,10 @@
 
 #include <iostream>
 
-// std::vector<char> PackInput(const Input &i) {
+// std::vector<char> PackInput(const Input &inp) {
 //   flatbuffers::FlatBufferBuilder builder;
-//   auto input = DCTL::CreateInput(builder, i.sequence, i.player_id, i.left,
-//                                  i.right, i.up, i.down);
+//   auto input = DCTL::CreateInput(builder, inp.sequence, mySnake_, inp.left,
+//                                  inp.right, inp.up, inp.down);
 //   builder.Finish(input);
 //   std::vector<char> result(builder.GetBufferPointer(),
 //                            builder.GetBufferPointer() + builder.GetSize());
@@ -13,23 +13,23 @@
 // }
 // Input UnpackInput(const std::vector<char> &flat) {}
 
-Game::Game(float mapWidth, float mapHeight, float scale, float speed, double dt,
-           size_t maxLength)
-    : mapWidth_(mapWidth),
-      mapHeight_(mapHeight),
+Game::Game(float map_width, float map_height, float scale, float speed, double dt,
+           size_t max_length)
+    : map_width_(map_width),
+      map_height_(map_height),
       scale_(scale),
       speed_(speed),
       dt_(dt),
-      maxLength_(maxLength) {}
+      max_length_(max_length) {}
 
 void Game::Draw() {
   ClearBackground(BLACK);
-  for (auto i = 0; i < mapWidth_; i++) {
-    for (auto j = 0; j < mapHeight_; j++) {
+  for (auto i = 0; i < map_width_; i++) {
+    for (auto j = 0; j < map_height_; j++) {
       DrawPixel((i + 1) * scale_, (j + 1) * scale_, GRAY);
     }
   }
-  for (auto &s : clientBuffer_.back().state.snakes) {
+  for (auto &s : client_buffer_.back().state.snakes) {
     auto &curTail = s.tail;
     auto &curColor = s.color;
     size_t thick = (size_t)std::round((float)scale_ / 1.5);
@@ -45,7 +45,7 @@ void Game::Draw() {
 }
 
 void Game::Process(const Input &inp) {
-  clientBuffer_.push_back({inp, NextState(clientBuffer_.back().state, inp)});
+  client_buffer_.push_back({inp, NextState(client_buffer_.back().state, inp)});
 }
 
 State Game::NextState(const State &st, const Input &inp) {
@@ -53,12 +53,12 @@ State Game::NextState(const State &st, const Input &inp) {
   for (auto &i : st.snakes) {
     auto tmp = i;
     tmp.tail.back() = newPos(tmp.dir, dt_ * speed_, tmp.tail.back());
-    if (i.playerId == mySnake_) {
+    if (i.player_id == my_snake_) {
       auto newDir = NewDir(i.dir, inp);
       if (newDir != i.dir) {
         tmp.dir = newDir;
         tmp.tail.push_back(tmp.tail.back());
-        if (tmp.tail.size() > maxLength_) {
+        if (tmp.tail.size() > max_length_) {
           tmp.tail.pop_front();
         }
       }
@@ -70,32 +70,32 @@ State Game::NextState(const State &st, const Input &inp) {
 }
 
 void Game::SetState(const State &st) {
-  if (!clientBuffer_.empty()) {
-    while (clientBuffer_.front().state.sequence < st.sequence) {
-      clientBuffer_.pop_front();
+  if (!client_buffer_.empty()) {
+    while (client_buffer_.front().state.sequence < st.sequence) {
+      client_buffer_.pop_front();
     }
-    clientBuffer_.front().state = st;
+    client_buffer_.front().state = st;
   } else {
-    clientBuffer_.push_back({{false, false, false, false}, st});
+    client_buffer_.push_back({{false, false, false, false}, st});
   }
 
-  if (clientBuffer_.size() > 1) {
-    for (auto i = clientBuffer_.begin() + 1; i != clientBuffer_.end(); i++) {
+  if (client_buffer_.size() > 1) {
+    for (auto i = client_buffer_.begin() + 1; i != client_buffer_.end(); i++) {
       i->state = NextState((i - 1)->state, i->input);
     }
   }
 }
 
-Dir Game::NewDir(const Dir &curDir, const Input &inp) {
-  if (((curDir == up) || (curDir == down)) && (inp.left != inp.right)) {
-    if (inp.left) return left;
-    if (inp.right) return right;
+Dir Game::NewDir(const Dir &cur_dir, const Input &inp) {
+  if (((cur_dir == kUp) || (cur_dir == kDown)) && (inp.left != inp.right)) {
+    if (inp.left) return kLeft;
+    if (inp.right) return kRight;
   }
-  if (((curDir == left) || (curDir == right)) && (inp.up != inp.down)) {
-    if (inp.up) return up;
-    if (inp.down) return down;
+  if (((cur_dir == kLeft) || (cur_dir == kRight)) && (inp.up != inp.down)) {
+    if (inp.up) return kUp;
+    if (inp.down) return kDown;
   }
-  return curDir;
+  return cur_dir;
 }
 
 // const Snake &Game::SetDir(Dir dir,
@@ -128,11 +128,11 @@ Dir Game::NewDir(const Dir &curDir, const Input &inp) {
 //   return snakes_.at(mySnake_);
 // }
 
-void Game::DrawLineExRoundEnd(Vector2 startPos, Vector2 endPos, float thick,
+void Game::DrawLineExRoundEnd(Vector2 start_pos, Vector2 end_pos, float thick,
                               Color color) {
-  DrawLineEx(startPos, endPos, thick, color);
-  DrawCircleV(startPos, thick / 2, color);
-  DrawCircleV(endPos, thick / 2, color);
+  DrawLineEx(start_pos, end_pos, thick, color);
+  DrawCircleV(start_pos, thick / 2, color);
+  DrawCircleV(end_pos, thick / 2, color);
 }
 
 // https://stackoverflow.com/a/14177062
@@ -145,20 +145,20 @@ bool Game::isIntersecting(Vector2 &p1, Vector2 &p2, Vector2 &q1, Vector2 &q2) {
           0);
 }
 
-Vector2 Game::newPos(Dir dir, float dist, Vector2 curPos) {
+Vector2 Game::newPos(Dir dir, float dist, Vector2 cur_pos) {
   switch (dir) {
-    case up:
-      return {curPos.x, curPos.y - dist};
+    case kUp:
+      return {cur_pos.x, cur_pos.y - dist};
       break;
-    case down:
-      return {curPos.x, curPos.y + dist};
+    case kDown:
+      return {cur_pos.x, cur_pos.y + dist};
       break;
-    case left:
-      return {curPos.x - dist, curPos.y};
+    case kLeft:
+      return {cur_pos.x - dist, cur_pos.y};
       break;
-    case right:
-      return {curPos.x + dist, curPos.y};
+    case kRight:
+      return {cur_pos.x + dist, cur_pos.y};
       break;
   }
-  return curPos;
+  return cur_pos;
 }
