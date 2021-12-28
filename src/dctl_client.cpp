@@ -92,7 +92,7 @@ int main() {
   uint32_t sequence{0};
   double t = 0.0;
   double dt = 0.01;
-  auto current_time = std::chrono::_V2::system_clock::now();
+  auto current_time = std::chrono::system_clock::now();
   double accumulator = 0.0;
 
   Game game(kMapWidth, kMapHeight, kScale, kSpeed, dt, 60);
@@ -120,7 +120,7 @@ int main() {
 
   while (!WindowShouldClose())  // Detect window close button or ESC key
   {
-    auto new_time = std::chrono::_V2::system_clock::now();
+    auto new_time = std::chrono::system_clock::now();
     auto frame_time =
         std::chrono::duration<double>(new_time - current_time).count();
     std::cout << frame_time << std::endl;
@@ -128,11 +128,20 @@ int main() {
     current_time = new_time;
 
     accumulator += frame_time;
-
+    Input inp{sequence,
+              0,
+              IsKeyPressed(KEY_LEFT),
+              IsKeyPressed(KEY_RIGHT),
+              IsKeyPressed(KEY_UP),
+              IsKeyPressed(KEY_DOWN)};
+    // Input inp{sequence,
+    //           0,
+    //           IsKeyDown(KEY_LEFT),
+    //           IsKeyDown(KEY_RIGHT),
+    //           IsKeyDown(KEY_UP),
+    //           IsKeyDown(KEY_DOWN)};
     while (accumulator >= dt) {
-      Input inp{sequence, IsKeyPressed(KEY_LEFT), IsKeyPressed(KEY_RIGHT),
-                IsKeyPressed(KEY_UP), IsKeyPressed(KEY_DOWN)};
-      
+      inp.sequence = sequence;
       game.Process(inp);
       t += dt;
       sequence++;

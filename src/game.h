@@ -8,14 +8,6 @@
 #include "dctl_input_generated.h"
 #include "snake.h"
 
-struct Input {
-  uint32_t sequence;
-  bool left;
-  bool right;
-  bool up;
-  bool down;
-};
-
 struct ClientState {
   Input input;
   State state;
@@ -37,8 +29,7 @@ class Game {
                           Color color);
   bool isIntersecting(Vector2 &p1, Vector2 &p2, Vector2 &q1, Vector2 &q2);
   State NextState(const State &st, const Input &inp);
-  Vector2 newPos(Dir dir, float dist, Vector2 cur_pos);
-  Dir NewDir(const Dir &cur_dir, const Input &inp);
+
   float map_width_;
   float map_height_;
   float scale_;

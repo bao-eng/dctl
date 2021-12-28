@@ -52,7 +52,7 @@ State Game::NextState(const State &st, const Input &inp) {
   State ns;
   for (auto &i : st.snakes) {
     auto tmp = i;
-    tmp.tail.back() = newPos(tmp.dir, dt_ * speed_, tmp.tail.back());
+    tmp.tail.back() = NewPos(tmp.dir, dt_ * speed_, tmp.tail.back());
     if (i.player_id == my_snake_) {
       auto newDir = NewDir(i.dir, inp);
       if (newDir != i.dir) {
@@ -84,18 +84,6 @@ void Game::SetState(const State &st) {
       i->state = NextState((i - 1)->state, i->input);
     }
   }
-}
-
-Dir Game::NewDir(const Dir &cur_dir, const Input &inp) {
-  if (((cur_dir == kUp) || (cur_dir == kDown)) && (inp.left != inp.right)) {
-    if (inp.left) return kLeft;
-    if (inp.right) return kRight;
-  }
-  if (((cur_dir == kLeft) || (cur_dir == kRight)) && (inp.up != inp.down)) {
-    if (inp.up) return kUp;
-    if (inp.down) return kDown;
-  }
-  return cur_dir;
 }
 
 // const Snake &Game::SetDir(Dir dir,
@@ -143,22 +131,4 @@ bool Game::isIntersecting(Vector2 &p1, Vector2 &p2, Vector2 &q1, Vector2 &q2) {
          (((p1.x - q1.x) * (q2.y - q1.y) - (p1.y - q1.y) * (q2.x - q1.x)) *
               ((p2.x - q1.x) * (q2.y - q1.y) - (p2.y - q1.y) * (q2.x - q1.x)) <
           0);
-}
-
-Vector2 Game::newPos(Dir dir, float dist, Vector2 cur_pos) {
-  switch (dir) {
-    case kUp:
-      return {cur_pos.x, cur_pos.y - dist};
-      break;
-    case kDown:
-      return {cur_pos.x, cur_pos.y + dist};
-      break;
-    case kLeft:
-      return {cur_pos.x - dist, cur_pos.y};
-      break;
-    case kRight:
-      return {cur_pos.x + dist, cur_pos.y};
-      break;
-  }
-  return cur_pos;
 }
