@@ -4,8 +4,8 @@
 #include <cmath>
 #include <unordered_map>
 
-#include "dctl_common.h"
-#include "dctl_input_generated.h"
+#include "dctl-common/src/dctl_common.h"
+#include "dctl-common/src/dctl_input_generated.h"
 #include "snake.h"
 
 struct ClientState {

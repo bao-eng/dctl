@@ -1,8 +1,0 @@
-namespace DCTL;
-
-table InputAck {
-  sequence:uint32;
-  player_id:uint32;
-}
-
-root_type InputAck;

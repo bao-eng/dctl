@@ -1,0 +1,3 @@
+[submodule "src/dctl-common"]
+	path = src/dctl-common
+	url = https://github.com/bao-eng/dctl-common.git

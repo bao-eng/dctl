@@ -8,8 +8,8 @@
 #include <list>
 #include <vector>
 
-#include "dctl_input_generated.h"
-#include "dctl_state_generated.h"
+#include "dctl-common/src/dctl_input_generated.h"
+#include "dctl-common/src/dctl_state_generated.h"
 #include "game.h"
 #include "raylib.h"
 #include "raymath.h"
