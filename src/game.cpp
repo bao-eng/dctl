@@ -52,8 +52,7 @@ State Game::NextState(const State &st, const Input &inp) {
   State ns;
   for (auto &i : st.snakes) {
     auto tmp = i;
-    tmp.tail.back() = NewPos(tmp.dir, dt_ * speed_, tmp.tail.back());
-    if (i.player_id == my_snake_) {
+    if (i.player_id == inp.player_id) {
       auto newDir = NewDir(i.dir, inp);
       if (newDir != i.dir) {
         tmp.dir = newDir;
@@ -63,6 +62,7 @@ State Game::NextState(const State &st, const Input &inp) {
         }
       }
     }
+    tmp.tail.back() = NewPos(tmp.dir, dt_ * speed_, tmp.tail.back());
     ns.snakes.push_back(tmp);
   }
   ns.sequence = inp.sequence;  // st.sequence + 1;
