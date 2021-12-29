@@ -130,10 +130,10 @@ int main() {
     accumulator += frame_time;
     Input inp{sequence,
               0,
-              IsKeyPressed(KEY_LEFT),
-              IsKeyPressed(KEY_RIGHT),
-              IsKeyPressed(KEY_UP),
-              IsKeyPressed(KEY_DOWN)};
+              IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A),
+              IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D),
+              IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W),
+              IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)};
     // Input inp{sequence,
     //           0,
     //           IsKeyDown(KEY_LEFT),
