@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include <vector>
 #include <deque>
+#include <unordered_map>
 #include <stdint.h>
 
 enum Dir { kNone, kUp, kDown, kLeft, kRight };
@@ -26,6 +27,11 @@ struct Snake {
 struct State{
   uint32_t sequence;
   std::vector<Snake> snakes;
+};
+
+struct StateInput {
+  State state;
+  std::unordered_map<int,Input> players_inputs;
 };
 
 Dir NewDir(const Dir &cur_dir, const Input &inp);
