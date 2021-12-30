@@ -98,7 +98,7 @@ int main() {
   Game game(kMapWidth, kMapHeight, kScale, kSpeed, dt, 60);
 
   State st;
-  st.sequence = sequence;
+  st.sequence = 0;
 
   Vector2 p1{3, (float)kMapHeight / 2};
   Snake s1{0, {p1, p1}, Dir::kRight, (Color){0, 255, 255, 255}};  // CYAN
