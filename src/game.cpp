@@ -123,12 +123,4 @@ void Game::DrawLineExRoundEnd(Vector2 start_pos, Vector2 end_pos, float thick,
   DrawCircleV(end_pos, thick / 2, color);
 }
 
-// https://stackoverflow.com/a/14177062
-bool Game::isIntersecting(Vector2 &p1, Vector2 &p2, Vector2 &q1, Vector2 &q2) {
-  return (((q1.x - p1.x) * (p2.y - p1.y) - (q1.y - p1.y) * (p2.x - p1.x)) *
-              ((q2.x - p1.x) * (p2.y - p1.y) - (q2.y - p1.y) * (p2.x - p1.x)) <
-          0) &&
-         (((p1.x - q1.x) * (q2.y - q1.y) - (p1.y - q1.y) * (q2.x - q1.x)) *
-              ((p2.x - q1.x) * (q2.y - q1.y) - (p2.y - q1.y) * (q2.x - q1.x)) <
-          0);
-}
+
