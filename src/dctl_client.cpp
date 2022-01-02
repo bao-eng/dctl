@@ -1,18 +1,13 @@
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <chrono>
-#include <cmath>
-#include <cstddef>
-#include <deque>
 #include <iostream>
-#include <list>
-#include <vector>
 
+#include "dctl-common/src/dctl_common.h"
 #include "dctl-common/src/dctl_input_generated.h"
 #include "dctl-common/src/dctl_state_generated.h"
 #include "game.h"
 #include "raylib.h"
-#include "raymath.h"
 
 using boost::asio::ip::udp;
 
@@ -20,65 +15,6 @@ const size_t kMapWidth = 107;
 const size_t kMapHeight = 54;
 const size_t kScale = 15;
 const float kSpeed = (float)58 / 6;
-
-// class Snake {
-// public:
-//   Snake(Vector2 pos, Dir dir, Color color, size_t maxLength) : dir_(dir),
-//   color_(color), maxLength_(maxLength) {
-//     tail_.emplace_back(pos);
-//     tail_.emplace_back(pos);
-//   }
-//   Vector2 move(float dist) {
-//     switch (dir_) {
-//     case up:
-//       tail_.back() = {tail_.back().x, tail_.back().y - dist};
-//       break;
-//     case down:
-//       tail_.back() = {tail_.back().x, tail_.back().y + dist};
-//       break;
-//     case left:
-//       tail_.back() = {tail_.back().x - dist, tail_.back().y};
-//       break;
-//     case right:
-//       tail_.back() = {tail_.back().x + dist, tail_.back().y};
-//       break;
-//     }
-//     return tail_.back();
-//   }
-//   const std::deque<Vector2> &get_tail() const { return tail_; }
-//   Color get_color() const { return color_; }
-
-//   void set_dir(Dir dir) {
-//     if (((dir_ == up) || (dir_ == down)) && ((dir == left) || (dir == right))
-//     ||
-//         ((dir_ == left) || (dir_ == right)) && ((dir == up) || (dir ==
-//         down))) {
-//       dir_ = dir;
-//       tail_.emplace_back(tail_.back());
-//     }
-//     if (tail_.size() > maxLength_)
-//       tail_.pop_front();
-//   }
-
-//   bool SelfIntersect() {
-//     if (tail_.size() > 4) {
-//       auto head = tail_.rbegin();
-//       auto neck = tail_.rbegin() + 1;
-//       for (auto it = tail_.rbegin() + 2; it != tail_.rend(); it++) {
-//         if (isIntersecting(*head, *neck, *it, *(it - 1))) {
-//           return true;
-//         }
-//       }
-//     }
-//     return false;
-//   }
-
-// private:
-//   std::deque<Vector2> tail_;
-//   Dir dir_;
-//   Color color_;
-//   size_t maxLength_;
-// };
 
 int main() {
   SetConfigFlags(FLAG_MSAA_4X_HINT);
@@ -123,7 +59,7 @@ int main() {
     auto new_time = std::chrono::system_clock::now();
     auto frame_time =
         std::chrono::duration<double>(new_time - current_time).count();
-    std::cout << frame_time << std::endl;
+    // std::cout << frame_time << std::endl;
     if (frame_time > 0.25) frame_time = 0.25;
     current_time = new_time;
 
@@ -173,7 +109,7 @@ int main() {
 
     BeginDrawing();
 
-    game.Draw();
+    game.DrawGame();
 
     DrawFPS(10, 10);
     EndDrawing();
@@ -183,21 +119,3 @@ int main() {
 
   return 0;
 }
-
-// auto dist = GetFrameTime() * SPEED;
-// auto it = snakes.begin();
-
-// while (it != snakes.end()) {
-//   it->set_dir(dir);
-//   auto pos = it->move(dist);
-//   if (it->SelfIntersect()) {
-//     it = snakes.erase(it);
-//     break;
-//   }
-//   auto tail = it->get_tail();
-//   if (pos.x < 0 || pos.y < 0 || pos.x > MAPWIDTH || pos.y > MAPHEIGHT) {
-//     it = snakes.erase(it);
-//   } else {
-//     ++it;
-//   }
-// }
