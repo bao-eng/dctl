@@ -4,8 +4,6 @@
 #include <iostream>
 
 #include "dctl-common/src/dctl_common.h"
-#include "dctl-common/src/dctl_input_generated.h"
-#include "dctl-common/src/dctl_state_generated.h"
 #include "game.h"
 #include "raylib.h"
 
