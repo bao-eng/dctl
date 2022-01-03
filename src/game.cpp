@@ -2,17 +2,6 @@
 
 #include <iostream>
 
-// std::vector<char> PackInput(const Input &inp) {
-//   flatbuffers::FlatBufferBuilder builder;
-//   auto input = DCTL::CreateInput(builder, inp.sequence, mySnake_, inp.left,
-//                                  inp.right, inp.up, inp.down);
-//   builder.Finish(input);
-//   std::vector<char> result(builder.GetBufferPointer(),
-//                            builder.GetBufferPointer() + builder.GetSize());
-//   return result;
-// }
-// Input UnpackInput(const std::vector<char> &flat) {}
-
 Game::Game(float map_width, float map_height, float scale, float speed,
            double dt, size_t max_length)
     : map_width_(map_width),
