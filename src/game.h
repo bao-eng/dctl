@@ -1,12 +1,9 @@
 #pragma once
 
 #include <boost/circular_buffer.hpp>
-#include <cmath>
 #include <unordered_map>
 
 #include "dctl-common/src/dctl_common.h"
-#include "dctl-common/src/dctl_input_generated.h"
-#include "snake.h"
 
 struct ClientState {
   Input input;
