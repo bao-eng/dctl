@@ -68,12 +68,7 @@ int main() {
               IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D),
               IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W),
               IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)};
-    // Input inp{sequence,
-    //           0,
-    //           IsKeyDown(KEY_LEFT),
-    //           IsKeyDown(KEY_RIGHT),
-    //           IsKeyDown(KEY_UP),
-    //           IsKeyDown(KEY_DOWN)};
+
     while (accumulator >= dt) {
       inp.sequence = sequence;
       game.Process(inp);
@@ -81,11 +76,6 @@ int main() {
       sequence++;
       accumulator -= dt;
     }
-    // auto mySnake = game.Update(std::chrono::_V2::system_clock::now());
-
-    // auto res = PackGameState({mySnake, mySnake, mySnake});
-    // auto unpacked = UnpackGameState(res);
-
     // boost::asio::io_service io_service;
     // udp::resolver resolver(io_service);
     // udp::resolver::query query(udp::v4(), "localhost", "daytime");
