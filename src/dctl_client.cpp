@@ -52,6 +52,12 @@ int main() {
   t += dt;
   sequence++;
 
+  boost::asio::io_service io_service;
+  udp::endpoint receiver_endpoint(boost::asio::ip::make_address("127.0.0.1"),
+                                  7777);
+  udp::socket socket(io_service);
+  socket.connect(receiver_endpoint);
+
   while (!WindowShouldClose())  // Detect window close button or ESC key
   {
     auto new_time = std::chrono::system_clock::now();
@@ -72,29 +78,21 @@ int main() {
     while (accumulator >= dt) {
       inp.sequence = sequence;
       game.Process(inp);
+      boost::array<char, 1> send_buf = {0};
+      auto flat = PackInput(inp);
+      // std::cout << "bytes sent: " << flat.size() << std::endl;
+      socket.send(boost::asio::buffer(flat.data(), flat.size()));
       t += dt;
       sequence++;
       accumulator -= dt;
     }
-    // boost::asio::io_service io_service;
-    // udp::resolver resolver(io_service);
-    // udp::resolver::query query(udp::v4(), "localhost", "daytime");
-    // udp::endpoint receiver_endpoint = *resolver.resolve(query);
-
-    // udp::socket socket(io_service);
-    // socket.open(udp::v4());
-
-    // boost::array<char, 1> send_buf = {0};
-    // socket.send_to(boost::asio::buffer(send_buf), receiver_endpoint);
-
-    // boost::array<char, 128> recv_buf;
-    // udp::endpoint sender_endpoint;
-    // size_t len =
-    //     socket.receive_from(boost::asio::buffer(recv_buf), sender_endpoint);
-    // async_receive_from (1 of 2 overloads)
-
-    // std::cout.write(recv_buf.data(), len);
-
+    if(socket.available()){
+      boost::array<char, 64000> recv_buffer_;
+      auto sz = socket.receive(boost::asio::buffer(recv_buffer_));
+      std::vector<char> buf(sz);
+      std::copy(recv_buffer_.begin(), recv_buffer_.begin()+sz, buf.begin());
+      game.SetState(UnpackState(buf));
+    }
     BeginDrawing();
 
     game.DrawGame();
