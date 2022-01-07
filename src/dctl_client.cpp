@@ -9,10 +9,12 @@
 
 using boost::asio::ip::udp;
 
-const size_t kMapWidth = 107;
-const size_t kMapHeight = 54;
-const size_t kScale = 15;
-const float kSpeed = (float)58 / 6;
+const float kMapWidth = 107;
+const float kMapHeight = 54;
+const float kScale = 15;
+const float kHeadDiameter = 1;
+const float kTailWidth = 0.65;
+const float kSpeed = 58.0f / 6;
 
 int main() {
   SetConfigFlags(FLAG_MSAA_4X_HINT);
@@ -29,7 +31,8 @@ int main() {
   auto current_time = std::chrono::system_clock::now();
   double accumulator = 0.0;
 
-  Game game(kMapWidth, kMapHeight, kScale, kSpeed, dt, 60);
+  Game game(kMapWidth, kMapHeight, kScale, kSpeed, dt, 60, kHeadDiameter,
+            kTailWidth);
 
   State st;
   st.sequence = 0;
@@ -86,13 +89,14 @@ int main() {
       sequence++;
       accumulator -= dt;
     }
-    if(socket.available()){
-      boost::array<char, 64000> recv_buffer_;
+    boost::array<char, 64000> recv_buffer_;
+    while (socket.available()) {
       auto sz = socket.receive(boost::asio::buffer(recv_buffer_));
       std::vector<char> buf(sz);
-      std::copy(recv_buffer_.begin(), recv_buffer_.begin()+sz, buf.begin());
+      std::copy(recv_buffer_.begin(), recv_buffer_.begin() + sz, buf.begin());
       game.SetState(UnpackState(buf));
     }
+
     BeginDrawing();
 
     game.DrawGame();
