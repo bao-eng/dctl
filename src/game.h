@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "dctl-common/src/dctl_common.h"
+#include "dctl-common/src/dctl_raylib.h"
 
 struct ClientState {
   Input input;

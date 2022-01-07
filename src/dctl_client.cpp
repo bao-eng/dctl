@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "dctl-common/src/dctl_common.h"
+#include "dctl-common/src/dctl_raylib.h"
 #include "game.h"
 #include "raylib.h"
 
@@ -19,7 +20,7 @@ const float kSpeed = 58.0f / 6;
 int main() {
   SetConfigFlags(FLAG_MSAA_4X_HINT);
 
-  InitWindow((kMapWidth + 1) * kScale, (kMapHeight + 1) * kScale, "snake");
+  InitWindow((kMapWidth + 1) * kScale, (kMapHeight + 1) * kScale, "dctl-client");
   // InitWindow(1920, 1080, "snake");
   // ToggleFullscreen();
 
@@ -37,14 +38,14 @@ int main() {
   State st;
   st.sequence = 0;
 
-  Vector2 p1{3, (float)kMapHeight / 2};
-  Snake s1{0, {p1, p1}, Dir::kRight, (Color){0, 255, 255, 255}};  // CYAN
-  Vector2 p2{kMapWidth - 3, (float)kMapHeight / 2};
-  Snake s2{1, {p2, p2}, Dir::kLeft, (Color){255, 0, 255, 255}};  // MAGENTA
-  Vector2 p3{(float)kMapWidth / 2, 3};
-  Snake s3{2, {p3, p3}, Dir::kDown, (Color){0, 255, 0, 255}};  // GREEN
-  Vector2 p4{(float)kMapWidth / 2, kMapHeight - 3};
-  Snake s4{3, {p4, p4}, Dir::kUp, (Color){255, 255, 0, 255}};  // YELLOW
+  Vec2 p1{3, (float)kMapHeight / 2};
+  Snake s1{0, {p1, p1}, Dir::kRight, (Col){0, 255, 255, 255}};  // CYAN
+  Vec2 p2{kMapWidth - 3, (float)kMapHeight / 2};
+  Snake s2{1, {p2, p2}, Dir::kLeft, (Col){255, 0, 255, 255}};  // MAGENTA
+  Vec2 p3{(float)kMapWidth / 2, 3};
+  Snake s3{2, {p3, p3}, Dir::kDown, (Col){0, 255, 0, 255}};  // GREEN
+  Vec2 p4{(float)kMapWidth / 2, kMapHeight - 3};
+  Snake s4{3, {p4, p4}, Dir::kUp, (Col){255, 255, 0, 255}};  // YELLOW
 
   st.snakes.push_back(s1);
   st.snakes.push_back(s2);
