@@ -5,6 +5,7 @@ set(SOURCES dctl_client.cpp
             ./dctl-common/src/dctl_common.cpp
             ./dctl-common/src/dctl_raylib.h
             ./dctl-common/src/dctl_raylib.cpp
+            ./raygui/src/raygui.h
             ./dctl-common/src/dctl_state_generated.h
             ./dctl-common/src/dctl_input_generated.h)
 
