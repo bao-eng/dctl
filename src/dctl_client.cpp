@@ -82,7 +82,8 @@ int main(int argc, char** argv) {
               IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W),
               IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)};
 
-    while (accumulator >= dt) { 
+    while (accumulator >= dt) {
+      inp.sequence = sequence;
       game.Process(inp);
       boost::array<char, 1> send_buf = {0};
       auto flat = PackInput(inp);
