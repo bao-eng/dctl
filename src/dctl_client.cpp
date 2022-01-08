@@ -18,7 +18,7 @@ const float kHeadDiameter = 1;
 const float kTailWidth = 0.65;
 const float kSpeed = 58.0f / 6;
 
-int main() {
+int main(int argc, char** argv) {
   SetConfigFlags(FLAG_MSAA_4X_HINT);
 
   InitWindow((kMapWidth + 1) * kScale, (kMapHeight + 1) * kScale, "dctl-client");
@@ -76,14 +76,13 @@ int main() {
 
     accumulator += frame_time;
     Input inp{sequence,
-              0,
+              std::stoi(argv[1]),
               IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A),
               IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D),
               IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W),
               IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)};
 
-    while (accumulator >= dt) {
-      inp.sequence = sequence;
+    while (accumulator >= dt) { 
       game.Process(inp);
       boost::array<char, 1> send_buf = {0};
       auto flat = PackInput(inp);

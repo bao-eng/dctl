@@ -5,3 +5,5 @@
 https://www.youtube.com/watch?v=mXAzAAL61sc
 
 exciting 3bit color palette!
+
+run two clients at once: ```./dctl-client 0 & ./dctl-client 1 && fg```
