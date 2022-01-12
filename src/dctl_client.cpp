@@ -1,11 +1,10 @@
-#include <boost/array.hpp>
-#include <boost/asio.hpp>
 #include <chrono>
 #include <iostream>
 
 #include "dctl-common/src/dctl_common.h"
 #include "dctl-common/src/dctl_raylib.h"
 #include "game.h"
+#include "udp_client.h"
 #include "raylib.h"
 #include "raygui/src/raygui.h"
 
@@ -39,38 +38,16 @@ int main(int argc, char** argv) {
   State st;
   st.sequence = 0;
 
-  Vec2 p1{3, (float)kMapHeight / 2};
-  Snake s1{0, {p1, p1}, Dir::kRight, (Col){0, 255, 255, 255}};  // CYAN
-  Vec2 p2{kMapWidth - 3, (float)kMapHeight / 2};
-  Snake s2{1, {p2, p2}, Dir::kLeft, (Col){255, 0, 255, 255}};  // MAGENTA
-  Vec2 p3{(float)kMapWidth / 2, 3};
-  Snake s3{2, {p3, p3}, Dir::kDown, (Col){0, 255, 0, 255}};  // GREEN
-  Vec2 p4{(float)kMapWidth / 2, kMapHeight - 3};
-  Snake s4{3, {p4, p4}, Dir::kUp, (Col){255, 255, 0, 255}};  // YELLOW
-
-  st.snakes.push_back(s1);
-  st.snakes.push_back(s2);
-  st.snakes.push_back(s3);
-  st.snakes.push_back(s4);
-
   game.SetState(st);
   t += dt;
   sequence++;
-
-  boost::asio::io_service io_service;
-  udp::endpoint receiver_endpoint(boost::asio::ip::make_address("127.0.0.1"),
-                                  7777);
-  // udp::endpoint receiver_endpoint(boost::asio::ip::make_address("164.92.221.113"),
-  //                                 7777);
-  udp::socket socket(io_service);
-  socket.connect(receiver_endpoint);
+  UDPClient udp_client("127.0.0.1", 7777);
 
   while (!WindowShouldClose())  // Detect window close button or ESC key
   {
     auto new_time = std::chrono::system_clock::now();
     auto frame_time =
         std::chrono::duration<double>(new_time - current_time).count();
-    // std::cout << frame_time << std::endl;
     if (frame_time > 0.25) frame_time = 0.25;
     current_time = new_time;
 
@@ -81,25 +58,18 @@ int main(int argc, char** argv) {
               IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D),
               IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W),
               IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)};
-
+    std::vector<Input> inp_vec;
     while (accumulator >= dt) {
       inp.sequence = sequence;
       game.Process(inp);
-      boost::array<char, 1> send_buf = {0};
-      auto flat = PackInput(inp);
-      // std::cout << "bytes sent: " << flat.size() << std::endl;
-      socket.send(boost::asio::buffer(flat.data(), flat.size()));
+      inp_vec.push_back(inp);
       t += dt;
       sequence++;
       accumulator -= dt;
     }
-    boost::array<char, 64000> recv_buffer_;
-    while (socket.available()) {
-      auto sz = socket.receive(boost::asio::buffer(recv_buffer_));
-      std::vector<char> buf(sz);
-      std::copy(recv_buffer_.begin(), recv_buffer_.begin() + sz, buf.begin());
-      game.SetState(UnpackState(buf));
-    }
+    udp_client.SendInput(inp_vec);
+    auto new_state = udp_client.Receive();
+    if(new_state.has_value()) game.SetState(new_state.value());
 
     BeginDrawing();
 
