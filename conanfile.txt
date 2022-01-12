@@ -1,7 +1,7 @@
 [requires]
 raylib/3.5.0 
 flatbuffers/2.0.0
-boost/1.77.0
+boost/1.78.0
 
 [generators]
 cmake
