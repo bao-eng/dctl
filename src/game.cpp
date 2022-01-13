@@ -34,7 +34,7 @@ void Game::SetState(const State &st) {
       client_buffer_.front().state = st;
     }
   } else {
-    client_buffer_.push_back({{false, false, false, false}, st});
+    client_buffer_.push_back({{}, st});
   }
 
   if (client_buffer_.size() > 1) {
