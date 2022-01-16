@@ -7,29 +7,47 @@ UDPClient::UDPClient(const std::string& addr, const int port)
   socket_.connect(endpoint_);
 }
 
-void UDPClient::SendInput(const std::vector<Input>& inp_vec) {
-  inputs_.insert(inputs_.end(),inp_vec.begin(), inp_vec.end());
-  std::vector<Input> tmp;
-  std::copy(inputs_.begin(), inputs_.end(), tmp.begin());
-  auto flat = PackInput(tmp);
-  socket_.send(boost::asio::buffer(flat.data(), flat.size()));
+void UDPClient::Send(const std::vector<char>& buf) {
+  socket_.send(boost::asio::buffer(buf.data(), buf.size()));
 }
 
-std::optional<State> UDPClient::Receive() {
-  State st;
+size_t UDPClient::ReceiveNonBlock(std::vector<char>& buf) {
+  size_t sz{0};
   if (socket_.available()) {
-    boost::array<char, 64000> recv_buffer_;
-    while (socket_.available()) {
-      auto sz = socket_.receive(boost::asio::buffer(recv_buffer_));
-      std::vector<char> buf(sz);
-      std::copy(recv_buffer_.begin(), recv_buffer_.begin() + sz, buf.begin());
-      auto new_state = UnpackState(buf);
-      if(new_state.sequence > st.sequence) st = new_state;
-    }
-    while (inputs_.front().sequence <= st.sequence) {
-      inputs_.pop_front();
-    }
-    return st;
+    boost::array<char, 64000> recv_buffer;
+    sz = socket_.receive(boost::asio::buffer(recv_buffer));
+    std::copy(recv_buffer.begin(), recv_buffer.begin() + sz, buf.begin());
   }
-  return {};
+  return sz;
 }
+
+// void UDPClient::SendInputPack(const InputPack& inpp) {
+//   std::copy(inpp.vec.begin(), inpp.vec.begin(),
+//   std::back_inserter(inputs_.vec)); auto flat = PackInputPack(inputs_);
+//   socket_.send(boost::asio::buffer(flat.data(), flat.size()));
+// }
+
+// std::optional<State> UDPClient::Receive() {
+//   State st;
+//   if (socket_.available()) {
+//     boost::array<char, 64000> recv_buffer;
+//     while (socket_.available()) {
+//       auto sz = socket_.receive(boost::asio::buffer(recv_buffer));
+//       std::vector<char> buf(sz);
+
+//       std::copy(recv_buffer.begin(), recv_buffer.begin() + sz, buf.begin());
+//       auto incoming = UnpackMessage(buf);
+//       if(std::holds_alternative<State>(incoming)){
+//       // std::cout << "received: " << sz << "ts: " << new_state.sequence <<
+//       "snakes: " << new_state.snakes.size() << std::endl;
+//       if(new_state.sequence > st.sequence){
+//         st = new_state;
+//       }
+//     }
+//     while (inputs_.front().sequence < st.sequence) {
+//       inputs_.pop_front();
+//     }
+//     return st;
+//   }
+//   return {};
+// }
